@@ -4,7 +4,7 @@ let _stats = { total: 0, sites: {}, recent: [] };
 
 chrome.storage.local.get('stats', d => { if (d.stats) _stats = d.stats; });
 
-chrome.runtime.onMessage.addListener((msg, sender) => {
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'finding') {
     _stats.total++;
     _stats.sites[msg.host] = (_stats.sites[msg.host] || 0) + msg.count;
@@ -14,10 +14,19 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
     chrome.action.setBadgeText({ text: String(_stats.total), tabId: sender.tab?.id });
     chrome.action.setBadgeBackgroundColor({ color: '#ef4444' });
   }
-  if (msg.type === 'get_stats') return Promise.resolve(_stats);
+  
+  if (msg.type === 'get_stats') {
+    sendResponse(_stats);
+    return true;
+  }
+  
   if (msg.type === 'clear_stats') {
     _stats = { total: 0, sites: {}, recent: [] };
     chrome.storage.local.set({ stats: _stats });
     chrome.action.setBadgeText({ text: '' });
+    sendResponse({ success: true });
+    return true;
   }
+
+  return true; // 保持 message channel 開啟，避免 SW 提前關閉
 });
