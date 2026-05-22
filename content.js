@@ -16,19 +16,7 @@ const T = {
     btn_suppress:   '此站不再提示',
     copied:         '✓ 已複製！',
     powered:        'by Kerr · github.com/kerr20801',
-    settings_title: 'SentinelDLP 設定',
-    enabled_label:  '啟用偵測',
-    enabled_sub:    '關閉後停止所有監控',
-    stat_total:     '累計偵測',
-    stat_sites:     '涉及網站',
-    recent:         '最近記錄',
-    no_record:      '尚無記錄',
-    clear:          '清除記錄',
-    trust_site:     '此站暫停',
-    just_now:       '剛才',
-    mins_ago:       (n) => `${n}分前`,
-    hrs_ago:        (n) => `${n}時前`,
-    item_found:     (n) => `${n} 處`,
+    item_found:     (n) => `${n} 處`
   },
   en: {
     title:          'SentinelDLP',
@@ -40,19 +28,7 @@ const T = {
     btn_suppress:   "Don't show on this site",
     copied:         '✓ Copied!',
     powered:        'by Kerr · github.com/kerr20801',
-    settings_title: 'SentinelDLP Settings',
-    enabled_label:  'Enable detection',
-    enabled_sub:    'Turn off to pause all monitoring',
-    stat_total:     'Total detections',
-    stat_sites:     'Sites affected',
-    recent:         'Recent alerts',
-    no_record:      'No records yet',
-    clear:          'Clear records',
-    trust_site:     'Trust site',
-    just_now:       'just now',
-    mins_ago:       (n) => `${n}m ago`,
-    hrs_ago:        (n) => `${n}h ago`,
-    item_found:     (n) => `${n} found`,
+    item_found:     (n) => `${n} found`
   }
 }[LANG];
 
@@ -93,94 +69,59 @@ function md5(str) {
 }
 function makeToken(tag, val) { return `[[${tag}_${md5(val)}]]`; }
 
-// ── Rules ─────────────────────────────────────────────────────
+// ── Rules (改為靜態宣告以優化效能) ─────────────────────────────────
 const RULES = [
-  // SSH user@ip / user@host
-  { tag:'SSH_TARGET', type:'SSH user@host', icon:'🖥',
-    re: () => /\b[a-z_][a-z0-9_-]{0,30}@(\d{1,3}\.){3}\d{1,3}\b/gi },
-  { tag:'SSH_TARGET', type:'SSH user@host', icon:'🖥',
-    re: () => /\b[a-z_][a-z0-9_-]{0,30}@[a-z0-9][a-z0-9-.]{2,60}\.[a-z]{2,}\b/gi },
-  // Linux paths
-  { tag:'LINUX_PATH', type:'Linux path', icon:'📁',
-    re: () => /\/home\/[a-zA-Z0-9_.-]+(?:\/[^\s"';<>|&,)\]]*)?/g },
-  { tag:'LINUX_PATH', type:'Linux path', icon:'📁',
-    re: () => /\/etc\/(?:ssl|nginx|apache2|ssh|pki|certs?)[^\s"';<>|&,)\]]*/g },
-  { tag:'LINUX_PATH', type:'Linux path', icon:'📁',
-    re: () => /\/var\/(?:www|log|run|lib)\/[^\s"';<>|&,)\]]*/g },
-  { tag:'LINUX_PATH', type:'Linux path', icon:'📁',
-    re: () => /\/opt\/[a-zA-Z0-9_.-]+(?:\/[^\s"';<>|&,)\]]*)?/g },
-  { tag:'LINUX_PATH', type:'Linux path', icon:'📁',
-    re: () => /\/root\/[^\s"';<>|&,)\]]*/g },
-  // Private IPs
-  { tag:'PRIVATE_IP', type:'Private IP', icon:'🌐',
-    re: () => /\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g },
-  { tag:'PRIVATE_IP', type:'Private IP', icon:'🌐',
-    re: () => /\b192\.168\.\d{1,3}\.\d{1,3}\b/g },
-  { tag:'PRIVATE_IP', type:'Private IP', icon:'🌐',
-    re: () => /\b172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}\b/g },
-  // Tokens & keys
-  { tag:'GITHUB_PAT', type:'GitHub/GitLab Token', icon:'🔑',
-    re: () => /ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82}|glpat-[A-Za-z0-9_-]{20,}/g },
-  { tag:'AWS_KEY', type:'AWS Access Key', icon:'☁️',
-    re: () => /AKIA[0-9A-Z]{16}/g },
-  { tag:'JWT', type:'JWT Token', icon:'🎫',
-    re: () => /eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/g },
-  { tag:'TG_TOKEN', type:'Telegram Token', icon:'📱',
-    re: () => /\b\d{8,12}:[A-Za-z0-9_-]{35}\b/g },
-  { tag:'CONN_STR', type:'Connection String', icon:'🗄️',
-    re: () => /(?:mongodb|postgres|mysql|redis|mssql):\/\/[^\s"']+/gi },
-  { tag:'PRIV_KEY', type:'Private Key', icon:'🔐',
-    re: () => /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
-  { tag:'FORTI_ENC', type:'FortiGate ENC', icon:'🔒',
-    re: () => /ENC\s+[A-Za-z0-9+/=]{20,}/g },
-  { tag:'PSK', type:'PSK / Preshared Key', icon:'🔒',
-    re: () => /(?:preshared-key|pre-shared-key|psk)\s*["']?([^\s"';<>{]+)["']?/gi },
-  { tag:'CC_NUM', type:'Credit Card', icon:'💳',
-    re: () => /\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13})\b/g },
-  { tag:'TW_PHONE', type:'TW Phone', icon:'📞',
-    re: () => /(?:\+886|0)[-\s]?(?:9\d{2}|[2-8]\d{1,2})[-\s]?\d{3,4}[-\s]?\d{3,4}/g },
-  // Email must come before domain
-  { tag:'EMAIL', type:'Email Address', icon:'📧',
-    re: () => /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g },
-  // Domain (.org .net .io .tw etc) — skip if starts with @ (email already caught)
-  { tag:'EXT_DOMAIN', type:'Domain', icon:'🌐',
-    re: () => /(?:^|[\s=:"'(,])([a-z0-9][a-z0-9-]{1,61}[a-z0-9]\.(?:org|net|io|co|tw|com\.tw|edu|gov|biz|info|me|app|dev|cloud|internal|corp|lan|local))\b/gi },
-  // Heuristic password/secret/key fields
-  { tag:'HEURISTIC', type:'Password/Secret field', icon:'🔑',
-    re: () => /(?:password|passwd|secret|token|api[_-]?key|auth[_-]?key)\s*[=:]\s*["']?([A-Za-z0-9+/\-_]{8,})["']?/gi },
+  { tag:'SSH_TARGET', type:'SSH user@host', icon:'🖥', re: /\b[a-z_][a-z0-9_-]{0,30}@(\d{1,3}\.){3}\d{1,3}\b/gi },
+  { tag:'SSH_TARGET', type:'SSH user@host', icon:'🖥', re: /\b[a-z_][a-z0-9_-]{0,30}@[a-z0-9][a-z0-9-.]{2,60}\.[a-z]{2,}\b/gi },
+  { tag:'LINUX_PATH', type:'Linux path', icon:'📁', re: /\/home\/[a-zA-Z0-9_.-]+(?:\/[^\s"';<>|&,)\]]*)?/g },
+  { tag:'LINUX_PATH', type:'Linux path', icon:'📁', re: /\/etc\/(?:ssl|nginx|apache2|ssh|pki|certs?)[^\s"';<>|&,)\]]*/g },
+  { tag:'LINUX_PATH', type:'Linux path', icon:'📁', re: /\/var\/(?:www|log|run|lib)\/[^\s"';<>|&,)\]]*/g },
+  { tag:'LINUX_PATH', type:'Linux path', icon:'📁', re: /\/opt\/[a-zA-Z0-9_.-]+(?:\/[^\s"';<>|&,)\]]*)?/g },
+  { tag:'LINUX_PATH', type:'Linux path', icon:'📁', re: /\/root\/[^\s"';<>|&,)\]]*/g },
+  { tag:'PRIVATE_IP', type:'Private IP', icon:'🌐', re: /\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g },
+  { tag:'PRIVATE_IP', type:'Private IP', icon:'🌐', re: /\b192\.168\.\d{1,3}\.\d{1,3}\b/g },
+  { tag:'PRIVATE_IP', type:'Private IP', icon:'🌐', re: /\b172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}\b/g },
+  { tag:'GITHUB_PAT', type:'GitHub/GitLab Token', icon:'🔑', re: /ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82}|glpat-[A-Za-z0-9_-]{20,}/g },
+  { tag:'AWS_KEY', type:'AWS Access Key', icon:'☁️', re: /AKIA[0-9A-Z]{16}/g },
+  { tag:'JWT', type:'JWT Token', icon:'🎫', re: /eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/g },
+  { tag:'TG_TOKEN', type:'Telegram Token', icon:'📱', re: /\b\d{8,12}:[A-Za-z0-9_-]{35}\b/g },
+  { tag:'CONN_STR', type:'Connection String', icon:'🗄️', re: /(?:mongodb|postgres|mysql|redis|mssql):\/\/[^\s"']+/gi },
+  { tag:'PRIV_KEY', type:'Private Key', icon:'🔐', re: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
+  { tag:'FORTI_ENC', type:'FortiGate ENC', icon:'🔒', re: /ENC\s+[A-Za-z0-9+/=]{20,}/g },
+  { tag:'PSK', type:'PSK / Preshared Key', icon:'🔒', re: /(?:preshared-key|pre-shared-key|psk)\s*["']?([^\s"';<>{]+)["']?/gi },
+  { tag:'CC_NUM', type:'Credit Card', icon:'💳', re: /\b(?:4[0-9]{3}[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{1,4}|5[1-5][0-9]{2}[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{4}|3[47][0-9]{2}[-\s]?[0-9]{6}[-\s]?[0-9]{5})\b/g },
+  { tag:'TW_PHONE', type:'TW Phone', icon:'📞', re: /(?<![,.\d])(?:\+886[-\s]?9|09)\d{2}[-\s]?\d{3}[-\s]?\d{3}(?!\d)/g },
+  { tag:'TW_PHONE', type:'TW Phone', icon:'📞', re: /(?<![,.\d])(?:\+886[-\s]?[2-8]|0[2-8])[-\s]?\d{4}[-\s]?\d{4}(?!\d)/g },
+  { tag:'EMAIL', type:'Email Address', icon:'📧', re: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g },
+  { tag:'EXT_DOMAIN', type:'Domain', icon:'🌐', re: /(?:^|[\s=:"'(,])([a-z0-9][a-z0-9-]{1,61}[a-z0-9]\.(?:org|net|io|co|tw|com\.tw|edu|gov|biz|info|me|app|dev|cloud|internal|corp|lan|local))\b/gi },
+  { tag:'HEURISTIC', type:'Password/Secret field', icon:'🔑', re: /(?:password|passwd|secret|token|api[_-]?key|auth[_-]?key)\s*[=:]\s*["']?([A-Za-z0-9+/\-_]{8,})["']?/gi },
 ];
 
 const SAFE_VALS = new Set(['true','false','none','null','undefined','placeholder','changeme','xxx','redacted','your_token_here','<password>']);
 
-// ── Core sanitize ──────────────────────────────────────────────
+// ── Core sanitize (修正捕獲組替換邏輯) ─────────────────────────────────
 function sanitize(text) {
   let out = text;
-  const findings = {};  // type → count
+  const findings = {};  
   const mapping  = {};
 
   for (const rule of RULES) {
-    const re = rule.re();
-    out = out.replace(re, (match) => {
-      // For heuristic/PSK: only mask the value part, keep the key
+    out = out.replace(rule.re, (match, p1) => {
+      // 針對 Heuristic 與 PSK：精確使用捕獲組 p1 取代原本的 match.match 探測
       if (rule.tag === 'HEURISTIC' || rule.tag === 'PSK') {
-        const vm = match.match(/[=:]\s*["']?([A-Za-z0-9+/\-_]{8,})["']?$/);
-        if (!vm) return match;
-        const val = vm[1];
-        if (SAFE_VALS.has(val.toLowerCase())) return match;
-        const tok = makeToken(rule.tag, val);
-        mapping[tok] = val;
+        if (!p1 || SAFE_VALS.has(p1.toLowerCase())) return match;
+        const tok = makeToken(rule.tag, p1);
+        mapping[tok] = p1;
         findings[rule.type] = (findings[rule.type] || 0) + 1;
-        return match.replace(val, tok);
+        return match.replace(p1, tok);
       }
-      // For domain rule with capture group
+      // 針對 Domain 規則：避免包含前方匹配的符號
       if (rule.tag === 'EXT_DOMAIN') {
-        const captured = match.match(/([a-z0-9][a-z0-9-]{1,61}[a-z0-9]\.(?:org|net|io|co|tw|com\.tw|edu|gov|biz|info|me|app|dev|cloud|internal|corp|lan|local))/i);
-        if (!captured) return match;
-        const dom = captured[1];
-        const tok = makeToken(rule.tag, dom);
-        mapping[tok] = dom;
+        if (!p1) return match;
+        const tok = makeToken(rule.tag, p1);
+        mapping[tok] = p1;
         findings[rule.type] = (findings[rule.type] || 0) + 1;
-        return match.replace(dom, tok);
+        return match.replace(p1, tok);
       }
       const tok = makeToken(rule.tag, match);
       mapping[tok] = match;
@@ -201,10 +142,11 @@ chrome.storage.sync.get(['enabled', 'suppressed'], data => {
   if (data.suppressed) _suppressed = data.suppressed;
 });
 
-chrome.runtime.onMessage.addListener(msg => {
-  if (msg.type === 'settings') {
-    _enabled   = msg.enabled   !== undefined ? msg.enabled   : _enabled;
-    _suppressed = msg.suppressed !== undefined ? msg.suppressed : _suppressed;
+// 改用 storage.onChanged 替代監聽跨分頁 runtime 訊息，避免背景分頁群發噴錯
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync') {
+    if (changes.enabled !== undefined) _enabled = changes.enabled.newValue;
+    if (changes.suppressed !== undefined) _suppressed = changes.suppressed.newValue;
   }
 });
 
@@ -221,14 +163,12 @@ function showOverlay(originalText, findings, sanitizedText) {
   const typeList = Object.entries(findings);
   if (typeList.length === 0) return;
 
-  // Find icon for each type
   const iconMap = {};
   RULES.forEach(r => { iconMap[r.type] = r.icon; });
 
   const overlay = document.createElement('div');
   overlay.id = '__sentinel_overlay__';
 
-  // All styles inline — no external CSS, no injected <style>
   overlay.style.cssText = [
     'position:fixed', 'top:16px', 'right:16px', 'z-index:2147483647',
     'width:340px', 'max-height:82vh', 'overflow-y:auto',
@@ -239,7 +179,6 @@ function showOverlay(originalText, findings, sanitizedText) {
     'font-size:13px', 'color:#e0e0e0', 'line-height:1.5',
   ].join(';');
 
-  // ── Header ──
   const hdr = document.createElement('div');
   hdr.style.cssText = 'padding:13px 15px 10px;border-bottom:1px solid #1f2937;display:flex;align-items:center;justify-content:space-between;gap:8px';
   hdr.innerHTML = `
@@ -257,7 +196,6 @@ function showOverlay(originalText, findings, sanitizedText) {
     <button id="__s_close__" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:17px;padding:0 4px;flex-shrink:0;line-height:1">✕</button>`;
   overlay.appendChild(hdr);
 
-  // ── Findings list ──
   const body = document.createElement('div');
   body.style.cssText = 'padding:10px 15px 6px';
 
@@ -278,7 +216,6 @@ function showOverlay(originalText, findings, sanitizedText) {
 
   overlay.appendChild(body);
 
-  // ── Sanitized output ──
   const cleanWrap = document.createElement('div');
   cleanWrap.style.cssText = 'padding:8px 15px 10px;border-top:1px solid #1f2937';
 
@@ -299,7 +236,6 @@ function showOverlay(originalText, findings, sanitizedText) {
 
   overlay.appendChild(cleanWrap);
 
-  // ── Buttons ──
   const btnWrap = document.createElement('div');
   btnWrap.style.cssText = 'padding:8px 15px 13px;display:flex;gap:7px;flex-wrap:wrap';
 
@@ -335,7 +271,6 @@ function showOverlay(originalText, findings, sanitizedText) {
 
   overlay.appendChild(btnWrap);
 
-  // ── Footer ──
   const foot = document.createElement('div');
   foot.style.cssText = 'padding:0 15px 10px;font-size:10px;color:#374151;text-align:right';
   foot.textContent = T.powered;
@@ -344,7 +279,6 @@ function showOverlay(originalText, findings, sanitizedText) {
   document.body.appendChild(overlay);
   _overlayEl = overlay;
 
-  // ── Events ──
   document.getElementById('__s_close__').onclick    = removeOverlay;
   document.getElementById('__s_continue__').onclick = removeOverlay;
 
@@ -354,7 +288,6 @@ function showOverlay(originalText, findings, sanitizedText) {
       if (btn) { btn.textContent = T.copied; btn.style.background = '#14532d'; }
       setTimeout(removeOverlay, 1200);
     }).catch(() => {
-      // fallback: select text in cleanBox
       const range = document.createRange();
       range.selectNodeContents(cleanBox);
       const sel = window.getSelection();
@@ -369,7 +302,6 @@ function showOverlay(originalText, findings, sanitizedText) {
     removeOverlay();
   };
 
-  // Auto-dismiss after 20s
   setTimeout(removeOverlay, 20000);
 }
 
@@ -385,7 +317,6 @@ document.addEventListener('paste', (e) => {
   const count = Object.keys(findings).length;
   if (count === 0) return;
 
-  // Send stats to background
   chrome.runtime.sendMessage({
     type: 'finding',
     host: location.hostname,
