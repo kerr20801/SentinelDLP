@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:320px;min-height:380px;background:#0f1117;color:#e0e0e0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC",sans-serif;font-size:13px}
+.header{background:linear-gradient(135deg,#0f1117,#1a1d2e);
+  padding:14px 16px;border-bottom:1px solid #1f2937;
+  display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:8px;background:#141826;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:18px;font-weight:900;color:#fff;font-family:monospace;
+  border:1.5px solid #2a2d3e;position:relative;overflow:hidden}
+.logo::after{content:'';position:absolute;width:9px;height:9px;
+  background:#ef4444;border-radius:50%;bottom:4px;right:4px}
+.header-text{flex:1}
+.header-text h1{font-size:14px;font-weight:700;color:#f9fafb}
+.header-text p{font-size:10px;color:#6b7280;margin-top:1px}
+.lang-btn{background:#1a1d2e;border:1px solid #2a2d3e;color:#6b7280;
+  padding:3px 10px;border-radius:12px;cursor:pointer;font-size:11px;
+  font-weight:700;font-family:inherit;flex-shrink:0;transition:all .15s}
+.lang-btn:hover{border-color:#ef4444;color:#ef4444}
+.status-bar{display:flex;align-items:center;gap:6px;padding:7px 16px;
+  background:#0a0c10;border-bottom:1px solid #1f2937;font-size:11px;color:#6b7280}
+.dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;
+  box-shadow:0 0 6px #22c55e;animation:pulse 2s infinite}
+.dot.off{background:#4b5563;box-shadow:none;animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px}
+.stat-card{background:#1a1d2e;border:1px solid #1f2937;border-radius:8px;padding:10px 12px}
+.stat-num{font-size:22px;font-weight:700;color:#ef4444;font-family:monospace}
+.stat-lbl{font-size:10px;color:#6b7280;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.section{padding:0 16px 12px}
+.sec-title{font-size:10px;color:#4b5563;text-transform:uppercase;letter-spacing:.06em;padding:10px 0 6px}
+.recent-list{display:flex;flex-direction:column;gap:4px;max-height:120px;overflow-y:auto}
+.rec-item{display:flex;align-items:center;justify-content:space-between;
+  background:#1a1d2e;border:1px solid #1f2937;border-radius:6px;padding:6px 10px;font-size:11px}
+.rec-host{color:#93c5fd;font-family:monospace;max-width:175px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-cnt{background:#3f0a0a;color:#fca5a5;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700}
+.rec-time{font-size:10px;color:#4b5563}
+.empty{font-size:11px;color:#374151;padding:6px 0}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;
+  background:#1a1d2e;border:1px solid #1f2937;border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.toggle-row span{font-size:12px}
+.toggle-row small{font-size:10px;color:#6b7280;display:block}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#1f2937;border-radius:20px;cursor:pointer;transition:background .2s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;
+  left:3px;top:3px;background:#6b7280;border-radius:50%;transition:all .2s}
+input:checked+.slider{background:#ef4444}
+input:checked+.slider:before{transform:translateX(16px);background:#fff}
+.btn{width:100%;padding:8px;border:none;border-radius:6px;font-size:12px;
+  font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s;margin-bottom:5px}
+.btn.danger{background:#3f0a0a;color:#fca5a5;border:1px solid #7f1d1d}
+.btn.ghost{background:#1a1d2e;color:#6b7280;border:1px solid #1f2937}
+.btn:hover{opacity:.8}
+.footer{padding:6px 16px 12px;font-size:10px;color:#374151;text-align:center}
+.footer a{color:#6b7280;text-decoration:none}.footer a:hover{color:#9ca3af}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">K</div>
+  <div class="header-text">
+    <h1>SentinelDLP</h1>
+    <p id="h-sub">本機偵測 · 資料不外傳 · by Kerr</p>
+  </div>
+  <button class="lang-btn" id="lang-btn" onclick="toggleLang()">EN</button>
+</div>
+<div class="status-bar">
+  <div class="dot" id="status-dot"></div>
+  <span id="status-text">保護中</span>
+</div>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-num" id="stat-total">0</div>
+    <div class="stat-lbl" id="lbl-total">累計偵測</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" id="stat-sites" style="color:#f59e0b">0</div>
+    <div class="stat-lbl" id="lbl-sites">涉及網站</div>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-title" id="lbl-recent">最近記錄</div>
+  <div class="recent-list" id="recent-list">
+    <div class="empty" id="empty-msg">尚無記錄</div>
+  </div>
+</div>
+<div class="section">
+  <div class="toggle-row">
+    <div>
+      <span id="lbl-enable">🔔 啟用偵測</span>
+      <small id="lbl-enable-sub">關閉後停止所有監控</small>
+    </div>
+    <label class="toggle">
+      <input type="checkbox" id="enable-chk" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+<div class="section">
+  <button class="btn danger" id="btn-clear">🗑 清除記錄</button>
+  <button class="btn ghost"  id="btn-suppress">此網站暫停偵測</button>
+</div>
+<div class="footer">
+  Built by <a href="https://github.com/kerr20801" target="_blank">Kerr</a>
+  · <a href="https://github.com/kerr20801" target="_blank">github.com/kerr20801</a>
+</div>
+<script>
+const I={
+  zh:{sub:'本機偵測 · 資料不外傳 · by Kerr',on:'保護中',off:'已暫停',
+      total:'累計偵測',sites:'涉及網站',recent:'最近記錄',empty:'尚無記錄',
+      enable:'🔔 啟用偵測',enable_sub:'關閉後停止所有監控',
+      clear:'🗑 清除記錄',suppress:'此網站暫停偵測',
+      suppressed:h=>`✓ ${h} 已暫停`,
+      just_now:'剛才',mins:n=>`${n}分前`,hrs:n=>`${n}時前`,lang_btn:'EN'},
+  en:{sub:'Local detection · No data sent · by Kerr',on:'Protected',off:'Paused',
+      total:'Detections',sites:'Sites',recent:'Recent alerts',empty:'No records yet',
+      enable:'🔔 Enable detection',enable_sub:'Turn off to pause monitoring',
+      clear:'🗑 Clear records',suppress:'Trust this site',
+      suppressed:h=>`✓ ${h} trusted`,
+      just_now:'just now',mins:n=>`${n}m ago`,hrs:n=>`${n}h ago`,lang_btn:'中文'}
+};
+let lang=localStorage.getItem('sdlp-lang')||(navigator.language.startsWith('zh')?'zh':'en');
+const enableChk=document.getElementById('enable-chk');
+const dot=document.getElementById('status-dot');
+function applyLang(){
+  const L=I[lang];
+  ['h-sub','lbl-total','lbl-sites','lbl-recent','empty-msg','lbl-enable','lbl-enable-sub'].forEach(id=>{
+    const k={
+      'h-sub':'sub','lbl-total':'total','lbl-sites':'sites',
+      'lbl-recent':'recent','empty-msg':'empty',
+      'lbl-enable':'enable','lbl-enable-sub':'enable_sub'
+    }[id];
+    if(document.getElementById(id))document.getElementById(id).textContent=L[k];
+  });
+  document.getElementById('status-text').textContent=enableChk.checked?L.on:L.off;
+  document.getElementById('btn-clear').textContent=L.clear;
+  document.getElementById('btn-suppress').textContent=L.suppress;
+  document.getElementById('lang-btn').textContent=L.lang_btn;
+}
+function toggleLang(){lang=lang==='zh'?'en':'zh';localStorage.setItem('sdlp-lang',lang);applyLang();loadStats();}
+chrome.storage.sync.get(['enabled','suppressed'],d=>{
+  if(d.enabled!==undefined)enableChk.checked=d.enabled;
+  dot.className='dot'+(enableChk.checked?'':' off');
+  applyLang();
+});
+enableChk.onchange=()=>{
+  chrome.storage.sync.set({enabled:enableChk.checked});
+  dot.className='dot'+(enableChk.checked?'':' off');
+  document.getElementById('status-text').textContent=I[lang][enableChk.checked?'on':'off'];
+  chrome.tabs.query({},tabs=>tabs.forEach(t=>chrome.tabs.sendMessage(t.id,{type:'settings',enabled:enableChk.checked}).catch(()=>{})));
+};
+async function loadStats(){
+  const s=await chrome.runtime.sendMessage({type:'get_stats'});
+  if(!s)return;
+  const L=I[lang];
+  document.getElementById('stat-total').textContent=s.total||0;
+  document.getElementById('stat-sites').textContent=Object.keys(s.sites||{}).length;
+  const list=document.getElementById('recent-list');
+  if(!s.recent?.length){list.innerHTML=`<div class="empty">${L.empty}</div>`;return;}
+  list.innerHTML=s.recent.slice(0,8).map(r=>{
+    const m=Math.round((Date.now()-r.ts)/60000);
+    const time=m<1?L.just_now:m<60?L.mins(m):L.hrs(Math.round(m/60));
+    return`<div class="rec-item"><span class="rec-host">${r.host}</span><span class="rec-cnt">${r.count}</span><span class="rec-time">${time}</span></div>`;
+  }).join('');
+}
+document.getElementById('btn-clear').onclick=()=>{chrome.runtime.sendMessage({type:'clear_stats'});setTimeout(loadStats,150);};
+document.getElementById('btn-suppress').onclick=()=>{
+  chrome.tabs.query({active:true,currentWindow:true},tabs=>{
+    if(!tabs[0])return;
+    const host=new URL(tabs[0].url).hostname;
+    chrome.storage.sync.get('suppressed',d=>{
+      const list=[...(d.suppressed||[])];
+      if(!list.includes(host))list.push(host);
+      chrome.storage.sync.set({suppressed:list});
+      document.getElementById('btn-suppress').textContent=I[lang].suppressed(host);
+    });
+  });
+};
+loadStats();applyLang();
+</script>
+</body>
+</html>

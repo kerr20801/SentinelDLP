@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SentinelDLP — 安裝教學 / Install Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surface:#1a1d2e;--surface2:#141826;
+  --border:#2a2d3e;--text:#e0e0e0;--muted:#6b7280;--hint:#4b5563;
+  --red:#ef4444;--red-lt:#3f0a0a;--green:#22c55e;--green-lt:#0a1a10;
+  --blue:#3b82f6;--blue-lt:#1e3a5f;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC",sans-serif;
+  --mono:"Consolas","Courier New",monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);
+  font-size:15px;line-height:1.7;min-height:100vh}
+
+/* ── Layout ── */
+.wrap{max-width:780px;margin:0 auto;padding:40px 24px 80px}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:48px 0 40px}
+.logo-big{width:72px;height:72px;border-radius:16px;background:var(--surface2);
+  border:2px solid var(--border);display:inline-flex;align-items:center;
+  justify-content:center;font-size:38px;font-weight:900;font-family:var(--mono);
+  color:#fff;margin-bottom:20px;position:relative}
+.logo-big::after{content:'';position:absolute;width:16px;height:16px;
+  background:var(--red);border-radius:50%;bottom:6px;right:6px;
+  box-shadow:0 0 8px var(--red)}
+.hero h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.hero h1 span{color:var(--red)}
+.hero p{color:var(--muted);font-size:15px;max-width:500px;margin:0 auto 20px}
+.hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.badge{font-size:12px;padding:4px 12px;border-radius:20px;font-weight:600}
+.badge.red  {background:var(--red-lt);color:#fca5a5;border:1px solid #7f1d1d}
+.badge.green{background:var(--green-lt);color:#86efac;border:1px solid #166534}
+.badge.blue {background:var(--blue-lt);color:#93c5fd;border:1px solid #1e3a5f}
+
+/* ── Lang toggle ── */
+.lang-bar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:28px}
+.lang-pill{padding:5px 16px;border-radius:20px;cursor:pointer;font-size:13px;
+  font-weight:700;border:1.5px solid var(--border);color:var(--muted);
+  background:var(--surface);transition:all .15s}
+.lang-pill.active,.lang-pill:hover{border-color:var(--red);color:var(--red)}
+
+/* ── Step cards ── */
+.steps{display:flex;flex-direction:column;gap:16px}
+.step{background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:22px 24px;display:flex;gap:18px;align-items:flex-start}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--red);
+  color:#fff;font-size:15px;font-weight:800;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body{flex:1;min-width:0}
+.step-body h2{font-size:16px;font-weight:700;margin-bottom:6px}
+.step-body p{color:var(--muted);font-size:14px;margin-bottom:10px}
+
+/* ── Screenshot placeholder / image ── */
+.screenshot{background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:14px;margin-top:10px;font-size:12px;color:var(--hint);
+  text-align:center;min-height:60px;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;gap:6px}
+.screenshot .ss-label{font-size:11px;color:var(--hint);margin-top:4px}
+
+/* ── Code block ── */
+.code{background:#0a0c10;border:1px solid var(--border);border-radius:8px;
+  padding:12px 16px;font-family:var(--mono);font-size:13px;color:#93c5fd;
+  margin:8px 0;word-break:break-all;position:relative}
+.code-copy{position:absolute;top:8px;right:10px;background:var(--surface);
+  border:1px solid var(--border);color:var(--muted);padding:3px 10px;
+  border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font)}
+.code-copy:hover{color:var(--text);border-color:var(--muted)}
+
+/* ── Highlight box ── */
+.tip{border-radius:10px;padding:14px 16px;font-size:13px;margin:10px 0;
+  display:flex;gap:10px;align-items:flex-start}
+.tip.green{background:var(--green-lt);border:1px solid #166534;color:#86efac}
+.tip.blue {background:var(--blue-lt);border:1px solid #1e3a5f;color:#93c5fd}
+.tip.red  {background:var(--red-lt); border:1px solid #7f1d1d;color:#fca5a5}
+.tip-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+
+/* ── Test section ── */
+.test-box{background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:16px;margin-top:10px}
+.test-box p{font-size:13px;color:var(--muted);margin-bottom:10px}
+.test-items{display:flex;flex-direction:column;gap:6px}
+.test-item{display:flex;align-items:center;gap:10px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:7px;padding:8px 12px;cursor:pointer;transition:border-color .15s}
+.test-item:hover{border-color:var(--red)}
+.test-item .val{font-family:var(--mono);font-size:12px;color:#fcd34d;flex:1}
+.test-item .lbl{font-size:11px;color:var(--muted)}
+.test-item .copy-btn{font-size:11px;background:var(--surface);border:1px solid var(--border);
+  color:var(--muted);padding:3px 9px;border-radius:4px;cursor:pointer}
+.test-item .copy-btn:hover{color:var(--text)}
+
+/* ── Rules table ── */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.rule-item{background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.rule-item .ico{font-size:18px;flex-shrink:0}
+.rule-item strong{font-size:13px;display:block}
+.rule-item span{font-size:11px;color:var(--muted)}
+
+/* ── Footer ── */
+.footer{margin-top:52px;padding-top:24px;border-top:1px solid var(--border);
+  text-align:center;color:var(--hint);font-size:13px}
+.footer a{color:var(--muted);text-decoration:none}
+.footer a:hover{color:var(--text)}
+
+/* ── Divider ── */
+.divider{height:1px;background:var(--border);margin:28px 0}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .rules-grid{grid-template-columns:1fr}
+  .step{flex-direction:column;gap:12px}
+  .step-num{width:28px;height:28px;font-size:13px}
+}
+
+/* ── Hidden class ── */
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Lang toggle -->
+  <div class="lang-bar">
+    <button class="lang-pill active" id="btn-zh" onclick="setLang('zh')">中文</button>
+    <button class="lang-pill"        id="btn-en" onclick="setLang('en')">English</button>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="logo-big">K</div>
+    <h1>Sentinel<span>DLP</span></h1>
+    <p id="hero-sub">貼上任何東西前，自動掃描並消毒敏感資料。一鍵安裝，零設定。</p>
+    <div class="hero-badges">
+      <span class="badge red"  id="b1">🔒 資料不外傳</span>
+      <span class="badge green" id="b2">⚡ 零安裝依賴</span>
+      <span class="badge blue"  id="b3">🌐 任何網站都有效</span>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+
+    <!-- Step 1 -->
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h2 id="s1-title">下載擴充套件</h2>
+        <p id="s1-desc">點擊下方連結下載 ZIP 檔，解壓縮到任意位置（例如桌面）。</p>
+        <div class="tip green">
+          <span class="tip-ico">💡</span>
+          <span id="s1-tip">解壓縮後會得到一個 <strong>sentinel-dlp-kerr</strong> 資料夾，記住它的位置。</span>
+        </div>
+        <div style="margin-top:12px">
+          <a href="sentinel-dlp-kerr.zip" download
+            style="display:inline-flex;align-items:center;gap:8px;background:var(--red);
+              color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;
+              font-weight:700;font-size:14px;transition:opacity .15s"
+            onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+            ⬇ <span id="dl-btn-txt">下載 sentinel-dlp-kerr.zip</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h2 id="s2-title">打開 Chrome 擴充套件管理頁</h2>
+        <p id="s2-desc">在 Chrome 網址列輸入以下網址，按 Enter：</p>
+        <div class="code">
+          chrome://extensions/
+          <button class="code-copy" onclick="copyCode('chrome://extensions/')">複製</button>
+        </div>
+        <div class="screenshot">
+          <span style="font-size:28px">🌐</span>
+          <span id="s2-img-label">在 Chrome 網址列貼上並按 Enter</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h2 id="s3-title">開啟「開發人員模式」</h2>
+        <p id="s3-desc">頁面右上角有一個「開發人員模式」的開關，把它打開。</p>
+        <div class="tip blue">
+          <span class="tip-ico">ℹ️</span>
+          <span id="s3-tip">開啟後頁面上方會出現三個新按鈕，這是正常的。</span>
+        </div>
+        <div class="screenshot" style="margin-top:10px">
+          <span style="font-size:28px">🔧</span>
+          <span id="s3-img-label">右上角找到「開發人員模式」並打開</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h2 id="s4-title">載入擴充套件</h2>
+        <p id="s4-desc">點擊左上角出現的「載入未封裝項目」按鈕，選擇剛才解壓縮的資料夾。</p>
+        <div class="tip red">
+          <span class="tip-ico">⚠️</span>
+          <span id="s4-tip">選擇的是<strong>資料夾</strong>（sentinel-dlp-kerr），不是 ZIP 檔。</span>
+        </div>
+        <div class="screenshot" style="margin-top:10px">
+          <span style="font-size:28px">📂</span>
+          <span id="s4-img-label">選擇解壓縮後的 sentinel-dlp-kerr 資料夾</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h2 id="s5-title">完成！測試看看</h2>
+        <p id="s5-desc">安裝後右上角會出現 <strong style="color:var(--red)">K</strong> 圖示。複製下面任一測試值，到任何網頁的輸入框貼上，看看是否彈出警告。</p>
+        <div class="test-box">
+          <p id="test-label">點一下複製，然後到任意網頁貼上：</p>
+          <div class="test-items">
+            <div class="test-item" onclick="copyTest('AKIAIOSFODNN7EXAMPLE', this)">
+              <span class="val">AKIAIOSFODNN7EXAMPLE</span>
+              <span class="lbl">AWS Key</span>
+              <button class="copy-btn">複製</button>
+            </div>
+            <div class="test-item" onclick="copyTest('192.168.1.100', this)">
+              <span class="val">192.168.1.100</span>
+              <span class="lbl">Private IP</span>
+              <button class="copy-btn">複製</button>
+            </div>
+            <div class="test-item" onclick="copyTest('ubuntu@10.0.0.1', this)">
+              <span class="val">ubuntu@10.0.0.1</span>
+              <span class="lbl">SSH target</span>
+              <button class="copy-btn">複製</button>
+            </div>
+            <div class="test-item" onclick="copyTest('/home/ubuntu/server.key', this)">
+              <span class="val">/home/ubuntu/server.key</span>
+              <span class="lbl">Linux path</span>
+              <button class="copy-btn">複製</button>
+            </div>
+            <div class="test-item" onclick="copyTest('ghp_abcdefghijklmnopqrstuvwxyz123456', this)">
+              <span class="val">ghp_abcdefghijklmnopqrstuvwxyz123456</span>
+              <span class="lbl">GitHub Token</span>
+              <button class="copy-btn">複製</button>
+            </div>
+          </div>
+        </div>
+        <div class="tip green" style="margin-top:12px">
+          <span class="tip-ico">✅</span>
+          <span id="s5-tip">看到右上角彈出紅色警告框，顯示消毒後版本，就表示安裝成功！</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Rules reference -->
+  <h2 id="rules-title" style="font-size:16px;font-weight:700;margin-bottom:12px">偵測規則一覽</h2>
+  <div class="rules-grid">
+    <div class="rule-item"><span class="ico">🖥</span><div><strong>SSH user@host</strong><span>user@IP · user@hostname</span></div></div>
+    <div class="rule-item"><span class="ico">📁</span><div><strong>Linux 路徑</strong><span>/home/ /etc/ssl /var/www /opt/ /root/</span></div></div>
+    <div class="rule-item"><span class="ico">🌐</span><div><strong>私有 IP</strong><span>10.x · 192.168.x · 172.16-31.x</span></div></div>
+    <div class="rule-item"><span class="ico">🔑</span><div><strong>GitHub / GitLab Token</strong><span>ghp_ · github_pat_ · glpat-</span></div></div>
+    <div class="rule-item"><span class="ico">☁️</span><div><strong>AWS Access Key</strong><span>AKIA...</span></div></div>
+    <div class="rule-item"><span class="ico">🎫</span><div><strong>JWT Token</strong><span>eyJ...eyJ...</span></div></div>
+    <div class="rule-item"><span class="ico">🔐</span><div><strong>Private Key Header</strong><span>-----BEGIN ... PRIVATE KEY-----</span></div></div>
+    <div class="rule-item"><span class="ico">🗄️</span><div><strong>Connection String</strong><span>mongodb:// · postgres:// · mysql://</span></div></div>
+    <div class="rule-item"><span class="ico">🔒</span><div><strong>FortiGate ENC / PSK</strong><span>ENC xxxx · preshared-key</span></div></div>
+    <div class="rule-item"><span class="ico">📧</span><div><strong>Email Address</strong><span>user@domain.com</span></div></div>
+    <div class="rule-item"><span class="ico">🌐</span><div><strong id="rule-domain-label">外部域名</strong><span>.org .net .io .tw .internal .corp</span></div></div>
+    <div class="rule-item"><span class="ico">📞</span><div><strong>TW Phone</strong><span>09xx-xxx-xxx · +886...</span></div></div>
+    <div class="rule-item"><span class="ico">🔑</span><div><strong>Password field</strong><span>password= · secret= · api_key=</span></div></div>
+    <div class="rule-item"><span class="ico">💳</span><div><strong>Credit Card</strong><span>Visa · Mastercard · Amex</span></div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <strong>SentinelDLP</strong> — Built by
+    <a href="https://github.com/kerr20801" target="_blank">Kerr</a>
+    · <a href="https://github.com/kerr20801" target="_blank">github.com/kerr20801</a>
+    <br><br>
+    <span style="font-size:11px">資料完全在本機處理，不會上傳到任何伺服器。</span><br>
+    <span style="font-size:11px">All processing is local. No data is ever sent anywhere.</span>
+  </div>
+
+</div>
+
+<script>
+// ── i18n ────────────────────────────────────────────────────────
+const STRINGS = {
+  zh: {
+    'hero-sub':     '貼上任何東西前，自動掃描並消毒敏感資料。一鍵安裝，零設定。',
+    'b1':'🔒 資料不外傳','b2':'⚡ 零安裝依賴','b3':'🌐 任何網站都有效',
+    's1-title':'下載擴充套件',
+    's1-desc': '點擊下方連結下載 ZIP 檔，解壓縮到任意位置（例如桌面）。',
+    's1-tip':  '解壓縮後會得到一個 <strong>sentinel-dlp-kerr</strong> 資料夾，記住它的位置。',
+    'dl-btn-txt':'⬇ 下載 sentinel-dlp-kerr.zip',
+    's2-title':'打開 Chrome 擴充套件管理頁',
+    's2-desc': '在 Chrome 網址列輸入以下網址，按 Enter：',
+    's2-img-label':'在 Chrome 網址列貼上並按 Enter',
+    's3-title':'開啟「開發人員模式」',
+    's3-desc': '頁面右上角有一個「開發人員模式」的開關，把它打開。',
+    's3-tip':  '開啟後頁面上方會出現三個新按鈕，這是正常的。',
+    's3-img-label':'右上角找到「開發人員模式」並打開',
+    's4-title':'載入擴充套件',
+    's4-desc': '點擊左上角出現的「載入未封裝項目」按鈕，選擇剛才解壓縮的資料夾。',
+    's4-tip':  '選擇的是<strong>資料夾</strong>（sentinel-dlp-kerr），不是 ZIP 檔。',
+    's4-img-label':'選擇解壓縮後的 sentinel-dlp-kerr 資料夾',
+    's5-title':'完成！測試看看',
+    's5-desc': '安裝後右上角會出現 <strong style="color:var(--red)">K</strong> 圖示。複製下面任一測試值，到任何網頁的輸入框貼上，看看是否彈出警告。',
+    's5-tip':  '看到右上角彈出紅色警告框，顯示消毒後版本，就表示安裝成功！',
+    'test-label':'點一下複製，然後到任意網頁貼上：',
+    'rules-title':'偵測規則一覽',
+    'rule-domain-label':'外部域名',
+  },
+  en: {
+    'hero-sub':     'Automatically scan and sanitize sensitive data before you paste anywhere. One-click install, zero config.',
+    'b1':'🔒 Data stays local','b2':'⚡ Zero dependencies','b3':'🌐 Works on any site',
+    's1-title':'Download the extension',
+    's1-desc': 'Click the download link below to get the ZIP file, then extract it anywhere (e.g. Desktop).',
+    's1-tip':  'After extracting you will have a <strong>sentinel-dlp-kerr</strong> folder. Remember its location.',
+    'dl-btn-txt':'⬇ Download sentinel-dlp-kerr.zip',
+    's2-title':'Open Chrome Extensions page',
+    's2-desc': 'Type the following URL in Chrome\'s address bar and press Enter:',
+    's2-img-label':'Paste in Chrome address bar and press Enter',
+    's3-title':'Enable Developer Mode',
+    's3-desc': 'Find the "Developer mode" toggle in the top-right corner and turn it on.',
+    's3-tip':  'After enabling, three new buttons appear at the top — that\'s normal.',
+    's3-img-label':'Find "Developer mode" in the top-right and enable it',
+    's4-title':'Load the extension',
+    's4-desc': 'Click "Load unpacked" (top-left) and select the extracted folder.',
+    's4-tip':  'Select the <strong>folder</strong> (sentinel-dlp-kerr), not the ZIP file.',
+    's4-img-label':'Select the extracted sentinel-dlp-kerr folder',
+    's5-title':'Done! Test it',
+    's5-desc': 'After install you\'ll see the <strong style="color:var(--red)">K</strong> icon in Chrome. Copy any test value below and paste it on any webpage.',
+    's5-tip':  'If you see a red alert overlay with the sanitized version — installation is successful!',
+    'test-label':'Click to copy, then paste anywhere:',
+    'rules-title':'Detection rules',
+    'rule-domain-label':'External domains',
+  }
+};
+
+let lang = localStorage.getItem('guide-lang') ||
+  (navigator.language.startsWith('zh') ? 'zh' : 'en');
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('guide-lang', l);
+  const S = STRINGS[l];
+  Object.entries(S).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = val;
+  });
+  document.getElementById('btn-zh').classList.toggle('active', l === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  // Update copy buttons label
+  document.querySelectorAll('.copy-btn').forEach(b => {
+    b.textContent = l === 'zh' ? '複製' : 'Copy';
+  });
+  // Update code-copy buttons
+  document.querySelectorAll('.code-copy').forEach(b => {
+    b.textContent = l === 'zh' ? '複製' : 'Copy';
+  });
+}
+
+function copyCode(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const btns = document.querySelectorAll('.code-copy');
+    btns.forEach(b => { b.textContent = lang === 'zh' ? '✓ 已複製' : '✓ Copied'; });
+    setTimeout(() => btns.forEach(b => { b.textContent = lang === 'zh' ? '複製' : 'Copy'; }), 1500);
+  });
+}
+
+function copyTest(val, el) {
+  navigator.clipboard.writeText(val).then(() => {
+    const btn = el.querySelector('.copy-btn');
+    btn.textContent = lang === 'zh' ? '✓ 已複製！' : '✓ Copied!';
+    btn.style.color = '#86efac';
+    setTimeout(() => { btn.textContent = lang === 'zh' ? '複製' : 'Copy'; btn.style.color = ''; }, 1800);
+  });
+}
+
+// Init
+setLang(lang);
+</script>
+</body>
+</html>
