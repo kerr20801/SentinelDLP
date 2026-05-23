@@ -124,16 +124,17 @@ manifest.json          Manifest V3, host_permissions: <all_urls>
 
 ---
 
-## Privacy
+## Privacy Policy (隱私權政策)
 
-| What | Answer |
+SentinelDLP is a browser-based local data loss prevention tool. All scanning and sanitization of sensitive credentials from paste events are processed **locally within your browser**. 
+
+| Question | Answer |
 |------|--------|
-| Data uploaded? | Never |
-| External requests? | None |
-| Clipboard read? | No — only intercepts `paste` events (clipboardData already provided) |
-| Storage? | `chrome.storage.local` only — stays on your device |
-| Analytics? | None |
-
+| Data uploaded? | **Never.** No data is ever collected, stored, or transmitted to external servers. |
+| External requests? | **None.** The extension operates entirely offline. |
+| Clipboard read? | **No.** It only intercepts active `paste` events (using `clipboardData`), meaning it never background-scans your clipboard. |
+| Storage? | Uses `chrome.storage.local` which stays strictly on your local device. |
+| Analytics / Telemetry? | **None.** Zero tracking, zero analytics, and zero telemetry. |
 ---
 
 ## Roadmap
