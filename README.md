@@ -25,8 +25,6 @@ SentinelDLP hooks into every paste event in your browser. Before your text lands
 
 **No clipboard access. No background scanning. No data leaves your machine.**
 
-![overlay demo](docs/overlay-demo.png)
-
 ---
 
 ## Detected Types
