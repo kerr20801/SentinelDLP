@@ -21,7 +21,7 @@ This happens every day — in support tickets, GitHub issues, ChatGPT prompts, N
 
 ## What SentinelDLP Does
 
-SentinelDLP hooks into every paste event in your browser. Before your text lands anywhere, it scans for 18 sensitive data types and surfaces an overlay showing exactly what it found — plus a sanitized version ready to copy.
+SentinelDLP hooks into every paste event in your browser. Before your text lands anywhere, it scans for 22 sensitive data types and surfaces an overlay showing exactly what it found — plus a sanitized version ready to copy.
 
 **No clipboard access. No background scanning. No data leaves your machine.**
 
@@ -41,7 +41,10 @@ SentinelDLP hooks into every paste event in your browser. Before your text lands
 | 🔐 Private Key Header | `-----BEGIN RSA PRIVATE KEY-----` |
 | 🔒 FortiGate ENC | `ENC AbCd...` |
 | 🔒 PSK / Pre-Shared Key | `preshared-key mysecret` |
-| 💳 Credit Card | Luhn-matched Visa/MC/Amex |
+| 💳 Credit Card | Visa / Mastercard / Amex / UnionPay / JCB |
+| 🏦 IBAN | `TW02 1234 5678 9012 3456` |
+| 🏦 SWIFT / BIC | `BOFAUS3NXXX` (keyword-triggered) |
+| 🏦 Bank Account | `帳號：0123456789012` (keyword-triggered) |
 | 📞 TW Phone Number | `0912-345-678`, `+886-9-xxx` |
 | 📧 Email Address | `user@domain.com` |
 | 🌐 Internal Domain | `es01.internal`, `*.corp.lan` |
