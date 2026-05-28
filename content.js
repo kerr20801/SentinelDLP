@@ -89,7 +89,18 @@ const RULES = [
   { tag:'PRIV_KEY', type:'Private Key', icon:'🔐', re: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
   { tag:'FORTI_ENC', type:'FortiGate ENC', icon:'🔒', re: /ENC\s+[A-Za-z0-9+/=]{20,}/g },
   { tag:'PSK', type:'PSK / Preshared Key', icon:'🔒', re: /(?:preshared-key|pre-shared-key|psk)\s*["']?([^\s"';<>{]+)["']?/gi },
-  { tag:'CC_NUM', type:'Credit Card', icon:'💳', re: /\b(?:4[0-9]{3}[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{1,4}|5[1-5][0-9]{2}[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{4}|3[47][0-9]{2}[-\s]?[0-9]{6}[-\s]?[0-9]{5})\b/g },
+  // Credit Cards — Visa / Mastercard / Amex / UnionPay / JCB
+  { tag:'CC_NUM', type:'Credit Card', icon:'💳', re: /\b4[0-9]{3}[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{1,4}\b/g },
+  { tag:'CC_NUM', type:'Credit Card', icon:'💳', re: /\b5[1-5][0-9]{2}[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{4}\b/g },
+  { tag:'CC_NUM', type:'Credit Card', icon:'💳', re: /\b3[47][0-9]{2}[-\s]?[0-9]{6}[-\s]?[0-9]{5}\b/g },
+  { tag:'CC_NUM', type:'Credit Card', icon:'💳', re: /\b62[0-9]{2}[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{4,7}\b/g },
+  { tag:'CC_NUM', type:'Credit Card', icon:'💳', re: /\b35(?:2[89]|[3-8][0-9])[-\s]?[0-9]{4}[-\s]?[0-9]{4}[-\s]?[0-9]{4}\b/g },
+  // IBAN — 2 letter country code + 2 digits + up to 30 alphanum
+  { tag:'IBAN', type:'IBAN', icon:'🏦', re: /\b[A-Z]{2}[0-9]{2}[\s]?(?:[A-Z0-9]{4}[\s]?){2,7}[A-Z0-9]{1,4}\b/g },
+  // SWIFT / BIC — only when preceded by swift/bic/routing keyword
+  { tag:'SWIFT', type:'SWIFT / BIC', icon:'🏦', re: /(?:swift|bic|routing)[：:\s]+([A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?)\b/gi },
+  // Taiwan bank account — only when preceded by 帳號/account keyword
+  { tag:'BANK_ACCT', type:'Bank Account', icon:'🏦', re: /(?:帳號|帳户|戶號|account\s*(?:no|number|#)?)[：:\s]*(\d{10,14})/gi },
   { tag:'TW_PHONE', type:'TW Phone', icon:'📞', re: /(?<![,.\d])(?:\+886[-\s]?9|09)\d{2}[-\s]?\d{3}[-\s]?\d{3}(?!\d)/g },
   { tag:'TW_PHONE', type:'TW Phone', icon:'📞', re: /(?<![,.\d])(?:\+886[-\s]?[2-8]|0[2-8])[-\s]?\d{4}[-\s]?\d{4}(?!\d)/g },
   { tag:'EMAIL', type:'Email Address', icon:'📧', re: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g },
@@ -108,7 +119,7 @@ function sanitize(text) {
   for (const rule of RULES) {
     out = out.replace(rule.re, (match, p1) => {
       // 針對 Heuristic 與 PSK：精確使用捕獲組 p1 取代原本的 match.match 探測
-      if (rule.tag === 'HEURISTIC' || rule.tag === 'PSK') {
+      if (rule.tag === 'HEURISTIC' || rule.tag === 'PSK' || rule.tag === 'BANK_ACCT' || rule.tag === 'SWIFT') {
         if (!p1 || SAFE_VALS.has(p1.toLowerCase())) return match;
         const tok = makeToken(rule.tag, p1);
         mapping[tok] = p1;

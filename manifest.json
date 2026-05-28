@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SentinelDLP — by Kerr",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Auto-redact sensitive data before pasting anywhere. By Kerr (github.com/kerr20801)",
   "permissions": ["activeTab", "storage", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
