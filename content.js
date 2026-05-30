@@ -84,7 +84,7 @@ const RULES = [
   { tag:'GITHUB_PAT', type:'GitHub/GitLab Token', icon:'🔑', re: /ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82}|glpat-[A-Za-z0-9_-]{20,}/g },
   { tag:'AWS_KEY', type:'AWS Access Key', icon:'☁️', re: /AKIA[0-9A-Z]{16}/g },
   { tag:'JWT', type:'JWT Token', icon:'🎫', re: /eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/g },
-  { tag:'TG_TOKEN', type:'Telegram Token', icon:'📱', re: /\b\d{8,12}:[A-Za-z0-9_-]{35}\b/g },
+  { tag:'TG_TOKEN', type:'Telegram Token', icon:'📱', re: /\b\d{8,12}:[A-Za-z0-9_-]{35,}\b/g },
   { tag:'CONN_STR', type:'Connection String', icon:'🗄️', re: /(?:mongodb|postgres|mysql|redis|mssql):\/\/[^\s"']+/gi },
   { tag:'PRIV_KEY', type:'Private Key', icon:'🔐', re: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----(?:[\s\S]|\\n)*?-----END (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
   { tag:'FORTI_ENC', type:'FortiGate ENC', icon:'🔒', re: /ENC\s+[A-Za-z0-9+/=]{20,}/g },
@@ -98,9 +98,9 @@ const RULES = [
   // IBAN — 2 letter country code + 2 digits + up to 30 alphanum
   { tag:'IBAN', type:'IBAN', icon:'🏦', re: /\b[A-Z]{2}[0-9]{2}[\s]?(?:[A-Z0-9]{4}[\s]?){2,7}[A-Z0-9]{1,4}\b/g },
   // SWIFT / BIC — only when preceded by swift/bic/routing keyword
-  { tag:'SWIFT', type:'SWIFT / BIC', icon:'🏦', re: /(?:swift|bic|routing)[：:\s]+([A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?)\b/gi },
+  { tag:'SWIFT', type:'SWIFT / BIC', icon:'🏦', re: /(?:swift(?:\s*code)?|bic|routing)[：:\s]+([A-Z]{4}\s?[A-Z]{2}\s?[A-Z0-9]{2}(?:\s?[A-Z0-9]{3})?)\b/gi },
   // Taiwan bank account — only when preceded by 帳號/account keyword
-  { tag:'BANK_ACCT', type:'Bank Account', icon:'🏦', re: /(?:帳號|帳户|戶號|account\s*(?:no|number|#)?)[：:\s]*(\d{10,14})/gi },
+  { tag:'BANK_ACCT', type:'Bank Account', icon:'🏦', re: /(?:帳號|帳户|戶號|account\s*(?:no|number|#)?)[：:\s]*([\d]{3}-[\d]{8,14}|\d{10,14})/gi },
   { tag:'TW_PHONE', type:'TW Phone', icon:'📞', re: /(?<![,.\d])(?:\+886[-\s]?9|09)\d{2}[-\s]?\d{3}[-\s]?\d{3}(?!\d)/g },
   { tag:'TW_PHONE', type:'TW Phone', icon:'📞', re: /(?<![,.\d])(?:\+886[-\s]?[2-8]|0[2-8])[-\s]?\d{4}[-\s]?\d{4}(?!\d)/g },
   { tag:'EMAIL', type:'Email Address', icon:'📧', re: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g },
