@@ -86,7 +86,7 @@ const RULES = [
   { tag:'JWT', type:'JWT Token', icon:'🎫', re: /eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/g },
   { tag:'TG_TOKEN', type:'Telegram Token', icon:'📱', re: /\b\d{8,12}:[A-Za-z0-9_-]{35}\b/g },
   { tag:'CONN_STR', type:'Connection String', icon:'🗄️', re: /(?:mongodb|postgres|mysql|redis|mssql):\/\/[^\s"']+/gi },
-  { tag:'PRIV_KEY', type:'Private Key', icon:'🔐', re: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
+  { tag:'PRIV_KEY', type:'Private Key', icon:'🔐', re: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----(?:[\s\S]|\\n)*?-----END (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
   { tag:'FORTI_ENC', type:'FortiGate ENC', icon:'🔒', re: /ENC\s+[A-Za-z0-9+/=]{20,}/g },
   { tag:'PSK', type:'PSK / Preshared Key', icon:'🔒', re: /(?:preshared-key|pre-shared-key|psk)\s*["']?([^\s"';<>{]+)["']?/gi },
   // Credit Cards — Visa / Mastercard / Amex / UnionPay / JCB
